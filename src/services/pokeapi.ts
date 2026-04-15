@@ -9,6 +9,19 @@ type RawSpriteBlock = {
   back_shiny: string | null;
 } | null | undefined;
 
+type RawPokemonResponse = {
+  id: number;
+  name: string;
+  sprites: {
+    versions: {
+      'generation-iv': {
+        platinum: RawSpriteBlock;
+        'heartgold-soulsilver': RawSpriteBlock;
+      };
+    };
+  };
+};
+
 const toSpriteSet = (raw: RawSpriteBlock): SpriteSet => {
   return {
     front_default: raw?.front_default ?? null,
@@ -22,8 +35,7 @@ export const fetchPokemon = async (idOrSlug: string): Promise<PokemonData> => {
   const res = await fetch(`${BASE_URL}/pokemon/${idOrSlug}`)
   if (!res.ok) throw new Error(`Failed to fetch Pokemon: ${idOrSlug} (${res.status})`)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data: any = await res.json()
+  const data: RawPokemonResponse = await res.json() as RawPokemonResponse;
   const genIV = data?.sprites?.versions?.['generation-iv']
 
   return {
