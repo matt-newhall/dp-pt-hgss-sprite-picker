@@ -1,5 +1,6 @@
 import { Box, CircularProgress, IconButton, Tooltip, Typography } from '@mui/material'
 import ReplayIcon from '@mui/icons-material/Replay'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useCallback } from 'react'
 import { SpritePanel } from '../../components/SpritePanel'
@@ -23,6 +24,14 @@ export const PokemonPickerScreen = () => {
 
   const currentIndex = POKEMON_SEQUENCE.indexOf(id);
   const isLast = currentIndex === POKEMON_SEQUENCE.length - 1;
+
+  const handleBack = useCallback(() => {
+    if (currentIndex <= 0) return;
+    navigate({
+      to: '/pokemon/$id',
+      params: { id: POKEMON_SEQUENCE[currentIndex - 1] as string },
+    });
+  }, [currentIndex, navigate]);
 
   const handleSelect = useCallback(
     (choice: GameVersion) => {
@@ -73,6 +82,18 @@ export const PokemonPickerScreen = () => {
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Tooltip title="Go back" placement="right">
+          <span>
+            <IconButton
+              size="small"
+              onClick={handleBack}
+              disabled={currentIndex <= 0}
+              sx={{ color: 'text.disabled', flexShrink: 0, '&:hover': { color: 'text.primary' } }}
+            >
+              <ArrowBackIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
         <Box sx={{ flex: 1 }}>
           <ProgressBar current={currentIndex + 1} total={TOTAL_COUNT} />
         </Box>
